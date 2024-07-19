@@ -1,3 +1,5 @@
+import pygame.sprite
+
 from settings import *
 from math import atan2, degrees
 
@@ -47,3 +49,21 @@ class Gun(pygame.sprite.Sprite):
         self.get_direction()
         self.rotate_gun()
         self.rect.center = self.player.rect.center + self.player_direction * self.distance
+
+
+class Bullet(pygame.sprite.Sprite):
+    def __init__(self, surf, pos, direction, groups):
+        super().__init__(groups)
+        self.image = surf
+        self.rect = self.image.get_frect(center=pos)
+        self.spawn_time = pygame.time.get_ticks()
+        self.lifetime = 1000
+
+        self.direction = direction
+        self.speed = 1200
+
+    def update(self, delta_time):
+        self.rect.center += self.direction * self.speed * delta_time
+
+        if pygame.time.get_ticks() - self.spawn_time >= self.lifetime:
+            self.kill()
