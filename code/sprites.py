@@ -67,3 +67,57 @@ class Bullet(pygame.sprite.Sprite):
 
         if pygame.time.get_ticks() - self.spawn_time >= self.lifetime:
             self.kill()
+
+
+class Enemy(pygame.sprite.Sprite):
+    def __init__(self, pos, frames, groups, player, collision_sprites):
+        super().__init__(groups)
+        self.player = player
+
+        #image
+        self.frames = frames
+        self.frame_index = 0
+        self.image = self.frames[self.frame_index]
+        self.animation_speed = 6
+
+        #rect
+        self.rect = self.image.get_frect(center=pos)
+        self.hitbox_rect = self.rect.inflate(-20, -40)
+        self.collision_sprites = collision_sprites
+        self.direction = pygame.math.Vector2()
+        self.speed = 350
+
+    def animate(self, delta_time):
+        self.frame_index += self.animation_speed * delta_time
+        self.image = self.frames[int(self.frame_index) % len(self.frames)]
+
+    def collision(self, direction):
+        for sprite in self.collision_sprites:
+            if sprite.rect.colliderect(self.hitbox_rect):
+                if direction == 'vertical':
+                    if self.direction.y > 0:
+                        self.hitbox_rect.bottom = sprite.rect.top
+                    if self.direction.y < 0:
+                        self.hitbox_rect.top = sprite.rect.bottom
+                elif direction == 'horizontal':
+                    if self.direction.x > 0:
+                        self.hitbox_rect.right = sprite.rect.left
+                    if self.direction.x < 0:
+                        self.hitbox_rect.left = sprite.rect.right
+
+    def move(self,delta_time):
+        #get direction
+        player_pos = pygame.math.Vector2(self.player.rect.center)
+        enemy_pos = pygame.math.Vector2(self.rect.center)
+        self.direction = (player_pos - enemy_pos).normalize()
+
+        #moveto position + collision logic
+        self.hitbox_rect.y += self.direction.y * self.speed * delta_time
+        self.collision('vertical')
+        self.hitbox_rect.x += self.direction.x * self.speed * delta_time
+        self.collision('horizontal')
+        self.rect.center = self.hitbox_rect.center
+
+    def update(self,delta_time):
+        self.move(delta_time)
+        self.animate(delta_time)
