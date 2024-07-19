@@ -13,7 +13,7 @@ class Player(pygame.sprite.Sprite):
 
         #movement
         self.direction = pygame.math.Vector2(0, 0)
-        self.speed = 700
+        self.speed = 600
         self.collision_sprites = collision_group
 
     def load_images(self):
