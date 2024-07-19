@@ -109,7 +109,7 @@ class Enemy(pygame.sprite.Sprite):
                     if self.direction.x < 0:
                         self.hitbox_rect.left = sprite.rect.right
 
-    def move(self,delta_time):
+    def move(self, delta_time):
         #get direction
         player_pos = pygame.math.Vector2(self.player.rect.center)
         enemy_pos = pygame.math.Vector2(self.rect.center)
@@ -135,7 +135,7 @@ class Enemy(pygame.sprite.Sprite):
         if pygame.time.get_ticks() - self.death_time >= self.death_duration:
             self.kill()
 
-    def update(self,delta_time):
+    def update(self, delta_time):
         if self.death_time == 0:
             self.move(delta_time)
             self.animate(delta_time)
